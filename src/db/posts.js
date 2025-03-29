@@ -48,29 +48,55 @@ export async function createPost(post, meta) {
 }
 
 /**
- * Fetch posts for a specific bubble
+ * Fetch posts for a specific bubble, including like, dislike, and comment count
  * @param {string} bubbleId
- * @returns {Promise<(Post & { meta: PostMeta })[]>}
+ * @returns {Promise<(Post & { meta: PostMeta, like_count: number, dislike_count: number, comment_count: number })[]>}
  */
 export async function getPostsByBubble(bubbleId) {
   const { data, error } = await supabase
     .from('posts')
     .select(
       `
-      *,
-      post_meta (
-        tone,
-        complexity,
-        ai_summary,
-        related_topics
-      )
-    `,
+    *,
+    profiles (
+      id,
+      username,
+      avatar_url
+    ),
+    post_meta (
+      tone,
+      complexity,
+      ai_summary,
+      related_topics
+    ),
+    interactions (
+      type
+    ),
+    comments (
+      id
+    )
+  `,
     )
     .eq('bubble_id', bubbleId)
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return data
+
+  // Post-process counts
+  const enriched = data.map((post) => {
+    const likes = post.interactions?.filter((i) => i.type === 'like') ?? []
+    const dislikes = post.interactions?.filter((i) => i.type === 'dislike') ?? []
+    const comments = post.comments ?? []
+
+    return {
+      ...post,
+      like_count: likes.length,
+      dislike_count: dislikes.length,
+      comment_count: comments.length,
+    }
+  })
+
+  return enriched
 }
 
 /**
@@ -93,6 +119,24 @@ export async function getPostById(postId) {
     `,
     )
     .eq('id', postId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Update an existing post
+ * @param {string} postId
+ * @param {Partial<Post>} updates
+ * @returns {Promise<Post>}
+ */
+export async function updatePost(postId, updates) {
+  const { data, error } = await supabase
+    .from('posts')
+    .update(updates)
+    .eq('id', postId)
+    .select()
     .single()
 
   if (error) throw error

@@ -12,14 +12,14 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary   : #1976D2;
-$secondary : #26A69A;
-$accent    : #9C27B0;
+$primary: #5c4dff; // Dreamy indigo (curiosity, portals)
+$secondary: #36d7b7; // Teal seafoam (contrast, highlights)
+$accent: #f35bc7; // Electric pink (glow, motion)
 
-$dark      : #1D1D1D;
-$dark-page : #121212;
+$dark: #0f0f15; // Main background (deep slate)
+$dark-page: #181a22; // Slightly lifted surface layer
 
-$positive  : #21BA45;
-$negative  : #C10015;
-$info      : #31CCEC;
-$warning   : #F2C037;
+$positive: #28c76f; // Success
+$negative: #ea5455; // Error
+$info: #00cfe8; // Neutral info
+$warning: #ff9f43; // Subtle caution

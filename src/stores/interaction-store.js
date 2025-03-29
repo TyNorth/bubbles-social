@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { logInteraction, getUserInteractions } from 'src/db/interactions'
+import { logInteraction, getUserInteractions, toggleInteraction } from 'src/db/interactions'
 
 /**
- * @typedef {'like'|'peek'|'expand'|'save'|'comment'} InteractionType
+ * @typedef {'like'|'peek'|'expand'|'save'|'comment'|'dislike'} InteractionType
  */
 
 /**
@@ -28,6 +28,31 @@ export const useInteractionStore = defineStore('interaction', {
     async track(payload) {
       const result = await logInteraction(payload)
       this.interactions.push(...result)
+    },
+
+    /**
+     * Toggle a like/dislike interaction
+     * @param {Object} options
+     * @param {string} options.userId
+     * @param {string} options.postId
+     * @param {InteractionType} options.type
+     * @returns {Promise<'added' | 'removed'>}
+     */
+    async toggle({ userId, postId, type }) {
+      const interactions = this.getByPost(postId)
+      const hasType = interactions.some((i) => i.type === type && i.user_id === userId)
+      const oppositeType = type === 'like' ? 'dislike' : 'like'
+      const hasOpposite = interactions.some((i) => i.type === oppositeType && i.user_id === userId)
+
+      const result = await toggleInteraction(userId, postId, type)
+
+      await this.fetchByUser(userId)
+
+      return {
+        result, // 'added' or 'removed'
+        hadBefore: hasType,
+        hadOpposite: hasOpposite,
+      }
     },
 
     /**

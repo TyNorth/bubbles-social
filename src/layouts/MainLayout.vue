@@ -1,44 +1,39 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="lHh Lpr lFf" class="main-layout">
+    <!-- Top Header -->
+    <q-header elevated class="bg-dark text-white">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <!-- Hamburger -->
+        <q-btn flat dense round icon="sym_o_menu" @click="toggleDrawer" />
 
         <q-toolbar-title>
-          Quasar App
+          <span class="text-primary">BubbleNet</span>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <!-- Top-right Actions -->
+        <q-btn flat dense round icon="sym_o_notifications" @click="goToNotifications" />
+        <q-btn flat dense round icon="sym_o_account_circle" @click="goToProfile" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <!-- Sidebar Drawer -->
+    <q-drawer v-model="drawerOpen" show-if-above bordered class="bg-grey-10 text-white">
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
+        <q-item clickable v-ripple to="/explore" exact>
+          <q-item-section avatar><q-icon name="sym_o_explore" /></q-item-section>
+          <q-item-section>Explore</q-item-section>
+        </q-item>
 
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item clickable v-ripple to="/profile" exact>
+          <q-item-section avatar><q-icon name="sym_o_person" /></q-item-section>
+          <q-item-section>My Profile</q-item-section>
+        </q-item>
+
+        <!-- Future nav items can go here -->
       </q-list>
     </q-drawer>
 
+    <!-- Page content -->
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -47,56 +42,26 @@
 
 <script setup>
 import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { useRouter } from 'vue-router'
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+const drawerOpen = ref(false)
+const router = useRouter()
 
-const leftDrawerOpen = ref(false)
+function toggleDrawer() {
+  drawerOpen.value = !drawerOpen.value
+}
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
+function goToNotifications() {
+  router.push('/notifications')
+}
+
+function goToProfile() {
+  router.push('/profile')
 }
 </script>
+
+<style scoped>
+.main-layout {
+  background: #0f0f15;
+}
+</style>

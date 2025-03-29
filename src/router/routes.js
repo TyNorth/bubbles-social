@@ -55,10 +55,29 @@ const routes = [
         meta: { public: true, layout: 'auth' },
       },
       {
+        path: 'register',
+        name: 'register',
+        component: () => import('pages/RegisterPage.vue'),
+        meta: { public: true, layout: 'auth' },
+      },
+
+      {
         path: 'setup',
         name: 'setup',
         component: () => import('pages/SetupPage.vue'),
         meta: { requiresAuth: true, onboarding: true, layout: 'auth' },
+      },
+      {
+        path: 'forgot-password',
+        name: 'forgot-password',
+        component: () => import('pages/ForgotPasswordPage.vue'),
+        meta: { public: true, layout: 'auth' },
+      },
+      {
+        path: 'reset-password',
+        name: 'reset-password',
+        component: () => import('pages/ResetPasswordPage.vue'),
+        meta: { public: true, layout: 'auth' },
       },
     ],
   },
