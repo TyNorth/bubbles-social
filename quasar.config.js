@@ -33,6 +33,10 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
+      env: {
+        VITE_SUPABASE_URL: process.env.SUPABASE_URL,
+        VITE_SUPABASE_KEY: process.env.SUPABASE_KEY,
+      },
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',
