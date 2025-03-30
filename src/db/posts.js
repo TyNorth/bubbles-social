@@ -58,7 +58,7 @@ export async function getPostsByBubble(bubbleId) {
     .select(
       `
     *,
-    profiles (
+    profile:profiles!posts_username_fkey (
       id,
       username,
       avatar_url

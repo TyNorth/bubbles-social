@@ -7,6 +7,7 @@
       :level-tag="bubble.level_tag"
       :cover-image="bubble.cover_image"
     />
+    <br />
 
     <!-- Posts -->
     <q-infinite-scroll @load="loadMore" :offset="100">
@@ -15,6 +16,7 @@
           v-for="post in visiblePosts"
           :key="post.id"
           :profile="post.profiles"
+          :username="post.username"
           :post-id="post.id"
           :content="post.content"
           :media-url="post.media_url"

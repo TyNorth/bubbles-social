@@ -8,7 +8,7 @@
       </q-avatar>
 
       <div class="column">
-        <div class="text-weight-bold text-white">{{ profile.username }}</div>
+        <div class="text-weight-bold text-white">{{ username }}</div>
         <div class="text-caption text-grey-5">{{ formattedDate }}</div>
       </div>
     </q-card-section>
@@ -39,7 +39,7 @@
       <q-chip
         v-for="tag in tags"
         :key="tag"
-        :label="tag"
+        :label="`# ${tag}`"
         color="primary"
         text-color="white"
         dense
@@ -94,6 +94,7 @@ const auth = useAuthStore()
 
 const props = defineProps({
   profile: Object,
+  username: String,
   postId: String,
   content: String,
   mediaUrl: String,
@@ -110,7 +111,7 @@ const formattedDate = computed(() =>
   formatDistanceToNow(new Date(props.createdAt), { addSuffix: true }),
 )
 
-const profileInitial = computed(() => props.profile?.username?.charAt(0)?.toUpperCase() || 'U')
+const profileInitial = computed(() => props.username?.charAt(0)?.toUpperCase() || 'U')
 
 const likeCount = computed(
   () => interactionStore.getByPost(props.postId).filter((i) => i.type === 'like').length,
