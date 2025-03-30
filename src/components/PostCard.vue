@@ -30,7 +30,7 @@
     <q-card-section class="q-pt-none q-pb-sm">
       <q-chip
         v-if="levelTag"
-        label="Level: {{ levelTag }}"
+        :label="`Level: ${levelTag}`"
         color="accent"
         text-color="white"
         dense
@@ -50,23 +50,31 @@
     <!-- Actions -->
     <q-separator />
     <q-card-actions align="between">
-      <q-btn v-if="editable" flat dense icon="sym_o_edit" color="grey-4" @click="emit('edit')" />
+      <q-btn v-if="editable" flat dense icon="sym_o_edit" color="grey-4" @click="edit" />
 
-      <q-btn flat dense icon="sym_o_favorite" :label="likeCount || ''" @click="like" color="red" />
       <q-btn
         flat
         dense
-        icon="sym_o_heart_broken"
-        :label="dislikeCount || ''"
-        @click="dislike"
-        color="pink"
+        :icon="isLiked ? 'sym_o_favorite' : 'sym_o_favorite'"
+        :color="isLiked ? 'red' : 'grey-5'"
+        :label="likeCount"
+        @click="toggleLike"
+      />
+
+      <q-btn
+        flat
+        dense
+        :icon="isDisliked ? 'sym_o_heart_broken' : 'sym_o_heart_broken'"
+        :color="isDisliked ? 'pink' : 'grey-5'"
+        :label="dislikeCount"
+        @click="toggleDislike"
       />
 
       <q-btn
         flat
         dense
         icon="sym_o_comment"
-        :label="commentCount || ''"
+        :label="commentCount"
         @click="comment"
         color="grey-4"
       />
@@ -78,16 +86,20 @@
 <script setup>
 import { computed } from 'vue'
 import { formatDistanceToNow } from 'date-fns'
+import { useInteractionStore } from 'src/stores/interaction-store'
+import { useAuthStore } from 'src/stores/auth-store'
+
+const interactionStore = useInteractionStore()
+const auth = useAuthStore()
 
 const props = defineProps({
   profile: Object,
+  postId: String,
   content: String,
   mediaUrl: String,
   tags: Array,
   levelTag: String,
   createdAt: String,
-  likeCount: Number,
-  dislikeCount: Number,
   commentCount: Number,
   editable: Boolean,
 })
@@ -100,11 +112,25 @@ const formattedDate = computed(() =>
 
 const profileInitial = computed(() => props.profile?.username?.charAt(0)?.toUpperCase() || 'U')
 
-function like() {
+const likeCount = computed(
+  () => interactionStore.getByPost(props.postId).filter((i) => i.type === 'like').length,
+)
+
+const dislikeCount = computed(
+  () => interactionStore.getByPost(props.postId).filter((i) => i.type === 'dislike').length,
+)
+
+const isLiked = computed(() => interactionStore.hasInteraction(props.postId, 'like', auth.user.id))
+
+const isDisliked = computed(() =>
+  interactionStore.hasInteraction(props.postId, 'dislike', auth.user.id),
+)
+
+function toggleLike() {
   emit('like')
 }
 
-function dislike() {
+function toggleDislike() {
   emit('dislike')
 }
 
@@ -114,6 +140,10 @@ function comment() {
 
 function view() {
   emit('view')
+}
+
+function edit() {
+  emit('edit')
 }
 </script>
 

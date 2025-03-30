@@ -13,7 +13,7 @@
       <q-chip
         v-for="tag in tags"
         :key="tag"
-        label="🌐 {{ tag }}"
+        :label="`🌐 ${tag}`"
         size="sm"
         class="q-mr-xs q-mb-xs"
         color="primary"

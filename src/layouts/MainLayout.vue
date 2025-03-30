@@ -13,11 +13,17 @@
         <!-- Top-right Actions -->
         <q-btn flat dense round icon="sym_o_notifications" @click="goToNotifications" />
         <q-btn flat dense round icon="sym_o_account_circle" @click="goToProfile" />
+        <q-btn flat dense round icon="sym_o_logout" @click="handleAuthAction" />
       </q-toolbar>
     </q-header>
 
     <!-- Sidebar Drawer -->
-    <q-drawer v-model="drawerOpen" show-if-above bordered class="bg-grey-10 text-white">
+    <q-drawer
+      v-model="drawerOpen"
+      show-if-above
+      bordered
+      class="bg-grey-10 text-white column justify-between"
+    >
       <q-list>
         <q-item clickable v-ripple to="/explore" exact>
           <q-item-section avatar><q-icon name="sym_o_explore" /></q-item-section>
@@ -28,9 +34,16 @@
           <q-item-section avatar><q-icon name="sym_o_person" /></q-item-section>
           <q-item-section>My Profile</q-item-section>
         </q-item>
-
-        <!-- Future nav items can go here -->
       </q-list>
+
+      <!-- Bottom Drawer Action -->
+      <div class="q-pa-sm">
+        <q-separator dark />
+        <q-item clickable v-ripple @click="handleAuthAction">
+          <q-item-section avatar><q-icon name="sym_o_logout" /></q-item-section>
+          <q-item-section>Sign Out</q-item-section>
+        </q-item>
+      </div>
     </q-drawer>
 
     <!-- Page content -->
@@ -46,6 +59,7 @@ import { useRouter } from 'vue-router'
 
 const drawerOpen = ref(false)
 const router = useRouter()
+const isLoggedIn = ref(true)
 
 function toggleDrawer() {
   drawerOpen.value = !drawerOpen.value
@@ -57,6 +71,18 @@ function goToNotifications() {
 
 function goToProfile() {
   router.push('/profile')
+}
+
+function handleAuthAction() {
+  if (isLoggedIn.value) {
+    // Perform logout
+    console.log('Logging out...')
+    isLoggedIn.value = false
+    router.push('/login')
+  } else {
+    // Perform sign-in
+    router.push('/login')
+  }
 }
 </script>
 

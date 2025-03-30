@@ -18,7 +18,7 @@
             text-color="white"
             dense
             size="sm"
-            label="🌐 {{ tag }}"
+            :label="`🌐 ${tag}`"
           />
           <q-chip
             v-if="levelTag"
@@ -43,7 +43,7 @@
           text-color="white"
           dense
           size="sm"
-          label="🌐 {{ tag }}"
+          :label="`🌐 ${tag}`"
         />
         <q-chip
           v-if="levelTag"

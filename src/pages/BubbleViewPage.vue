@@ -15,16 +15,16 @@
           v-for="post in visiblePosts"
           :key="post.id"
           :profile="post.profiles"
+          :post-id="post.id"
           :content="post.content"
           :media-url="post.media_url"
           :tags="post.tags"
-          :level-tag="post.level_tag"
+          :level-tag="post?.level_tag"
           :created-at="post.created_at"
-          :like-count="post.like_count"
-          :dislike-count="post.dislike_count"
+          :comment-count="post.comment_count"
           :editable="auth.user.id === post.user_id"
-          @like="() => likePost(post)"
-          @dislike="() => dislikePost(post)"
+          @like="() => toggleInteraction(post, 'like')"
+          @dislike="() => toggleInteraction(post, 'dislike')"
           @comment="() => commentPost(post)"
           @view="() => viewPost(post)"
           @edit="() => editPost(post)"
@@ -95,44 +95,24 @@ function loadMore(done) {
   setTimeout(done, 300)
 }
 
-// 🔁 Toggle like/dislike using the store
-async function likePost(post) {
+async function toggleInteraction(post, type) {
   try {
-    const { result, hadBefore, hadOpposite } = await interactionStore.toggle({
+    const result = await interactionStore.toggle({
       userId: auth.user.id,
       postId: post.id,
-      type: 'like',
+      type,
     })
 
-    if (result === 'added' && !hadBefore) {
-      updateInteractionCount(post.id, 'like', 1)
-      if (hadOpposite) updateInteractionCount(post.id, 'dislike', -1)
-    } else if (result === 'removed') {
-      updateInteractionCount(post.id, 'like', -1)
-    }
+    const actionText =
+      type === 'like'
+        ? result.result === 'added'
+          ? 'Liked!'
+          : 'Like removed.'
+        : result.result === 'added'
+          ? 'Disliked.'
+          : 'Dislike removed.'
 
-    notifySuccess(result === 'added' ? 'Liked!' : 'Like removed.')
-  } catch (err) {
-    notifyError(err)
-  }
-}
-
-async function dislikePost(post) {
-  try {
-    const { result, hadBefore, hadOpposite } = await interactionStore.toggle({
-      userId: auth.user.id,
-      postId: post.id,
-      type: 'dislike',
-    })
-
-    if (result === 'added' && !hadBefore) {
-      updateInteractionCount(post.id, 'dislike', 1)
-      if (hadOpposite) updateInteractionCount(post.id, 'like', -1)
-    } else if (result === 'removed') {
-      updateInteractionCount(post.id, 'dislike', -1)
-    }
-
-    notifySuccess(result === 'added' ? 'Disliked.' : 'Dislike removed.')
+    notifySuccess(actionText)
   } catch (err) {
     notifyError(err)
   }
@@ -165,14 +145,6 @@ function editPost(post) {
       notifyError(err)
     }
   })
-}
-
-function updateInteractionCount(postId, type, delta) {
-  const post = posts.value.find((p) => p.id === postId)
-  if (!post) return
-
-  if (type === 'like') post.like_count += delta
-  if (type === 'dislike') post.dislike_count += delta
 }
 
 onMounted(async () => {

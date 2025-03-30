@@ -1,1 +1,58 @@
 // app global css in SCSS form
+/* Material Symbols Outlined */
+[class^='sym_o_']:before,
+[class*=' sym_o_']:before {
+  font-family: 'Material Symbols Outlined';
+  content: attr(data-icon);
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48;
+}
+
+/* Material Symbols Filled */
+[class^='sym_f_']:before,
+[class*=' sym_f_']:before {
+  font-family: 'Material Symbols';
+  content: attr(data-icon);
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48;
+}
+
+/* Material Symbols Base */
+.material-symbols,
+.sym_f {
+  font-family: 'Material Symbols', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px; /* can adjust as needed */
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Create a utility class per icon if desired */
+.sym_f_favorite::before {
+  content: 'favorite';
+}
+
+.sym_f_heart_broken::before {
+  content: 'heart_broken';
+}
+
+.sym_f_comment::before {
+  content: 'comment';
+}
+
+.sym_f_visibility::before {
+  content: 'visibility';
+}

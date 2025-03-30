@@ -36,20 +36,27 @@ export const useInteractionStore = defineStore('interaction', {
      * @param {string} options.userId
      * @param {string} options.postId
      * @param {InteractionType} options.type
-     * @returns {Promise<'added' | 'removed'>}
+     * @returns {Promise<{ result: 'added' | 'removed', hadBefore: boolean, hadOpposite: boolean }>}
      */
     async toggle({ userId, postId, type }) {
+      const oppositeType = type === 'like' ? 'dislike' : type === 'dislike' ? 'like' : null
+
+      // Remove opposite if it exists in local store
+      if (oppositeType) {
+        this.interactions = this.interactions.filter(
+          (i) => !(i.post_id === postId && i.user_id === userId && i.type === oppositeType),
+        )
+      }
+
       const interactions = this.getByPost(postId)
       const hasType = interactions.some((i) => i.type === type && i.user_id === userId)
-      const oppositeType = type === 'like' ? 'dislike' : 'like'
       const hasOpposite = interactions.some((i) => i.type === oppositeType && i.user_id === userId)
 
       const result = await toggleInteraction(userId, postId, type)
-
       await this.fetchByUser(userId)
 
       return {
-        result, // 'added' or 'removed'
+        result,
         hadBefore: hasType,
         hadOpposite: hasOpposite,
       }
@@ -70,6 +77,19 @@ export const useInteractionStore = defineStore('interaction', {
      */
     getByPost(postId) {
       return this.interactions.filter((i) => i.post_id === postId)
+    },
+
+    /**
+     * Check if user has interacted with a post in a certain way
+     * @param {string} postId
+     * @param {InteractionType} type
+     * @param {string} userId
+     * @returns {boolean}
+     */
+    hasInteraction(postId, type, userId) {
+      return this.interactions.some(
+        (i) => i.post_id === postId && i.user_id === userId && i.type === type,
+      )
     },
   },
 })

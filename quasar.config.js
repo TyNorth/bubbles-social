@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url'
 
 export default defineConfig((ctx) => {
   return {
+    scrollBehavior: () => ({ left: 0, top: 0 }),
+
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
 
@@ -29,6 +31,7 @@ export default defineConfig((ctx) => {
 
       'roboto-font', // optional, you are not bound to it
       'material-symbols-outlined', // optional, you are not bound to it
+      'bootstrap-icons',
     ],
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build

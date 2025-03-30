@@ -11,6 +11,7 @@
         type="email"
         dense
         autofocus
+        class="full-width"
         :disable="loading"
       />
 
@@ -21,6 +22,7 @@
         type="password"
         dense
         :disable="loading"
+        class="full-width"
       />
 
       <div class="row items-center justify-between">
@@ -52,7 +54,7 @@
       <q-btn
         outline
         color="white"
-        icon="fab fa-google"
+        icon="bi-google"
         label="Log in with Google"
         class="full-width"
         @click="loginWithGoogle"
@@ -60,7 +62,7 @@
       />
 
       <div class="text-caption text-center text-grey q-mt-sm">
-        Don’t have an account?
+        Don't have an account?
         <q-btn flat label="Sign Up" class="text-primary" @click="goToSignup" />
       </div>
     </q-form>

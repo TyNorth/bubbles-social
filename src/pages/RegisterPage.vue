@@ -13,6 +13,7 @@
         type="email"
         dense
         autofocus
+        class="full-width"
         :disable="loading"
       />
 
@@ -21,6 +22,7 @@
         v-model="password"
         label="Password"
         type="password"
+        class="full-width"
         dense
         :disable="loading"
       />
@@ -32,6 +34,7 @@
         type="password"
         dense
         :disable="loading"
+        class="full-width"
       />
 
       <q-btn
