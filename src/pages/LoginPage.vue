@@ -6,10 +6,13 @@
 
       <q-input
         filled
+        dark
         v-model="email"
         label="Email"
         type="email"
+        :rules="email.length != 0 ? [rules.required, rules.email] : []"
         dense
+        label-color="grey-4"
         autofocus
         class="full-width"
         :disable="loading"
@@ -17,12 +20,15 @@
 
       <q-input
         filled
+        dark
         v-model="password"
         label="Password"
         type="password"
+        :rules="password.length != 0 ? [rules.required] : []"
         dense
-        :disable="loading"
+        label-color="grey-4"
         class="full-width"
+        :disable="loading"
       />
 
       <div class="row items-center justify-between">
@@ -74,6 +80,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/auth-store'
+import { notify, notifyError } from 'src/utils/notify'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -82,19 +89,31 @@ const auth = useAuthStore()
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
-const error = ref(null)
+
+const rules = {
+  required: (val) => !!val || 'This field is required',
+  email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Please enter a valid email',
+}
 
 async function login() {
+  if (!email.value || !password.value) {
+    notifyError('Please fill in both email and password.')
+    return
+  }
+
   loading.value = true
-  error.value = null
 
   try {
     await auth.login(email.value, password.value)
     await auth.fetchUser()
-    router.push('/explore')
+    console.log(auth.user)
+    if (auth.user) {
+      router.push('/explore')
+    } else {
+      notifyError('Login failed. Please try again.')
+    }
   } catch (err) {
-    error.value = err.message || 'Login failed'
-    $q.notify({ type: 'negative', message: error.value })
+    notifyError(err.message || 'Login failed. Please check your credentials.')
   } finally {
     loading.value = false
   }
@@ -109,9 +128,7 @@ function goToSignup() {
 }
 
 async function loginWithGoogle() {
-  $q.notify({ message: 'Google login coming soon!', color: 'secondary' })
-  // Supabase OAuth can be wired here later:
-  // await supabase.auth.signInWithOAuth({ provider: 'google' })
+  notify({ message: 'Google login coming soon!', type: 'info' })
 }
 </script>
 

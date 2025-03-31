@@ -7,6 +7,7 @@
       </div>
 
       <q-input
+        dark
         filled
         v-model="password"
         label="New Password"
@@ -17,6 +18,7 @@
       />
 
       <q-input
+        dark
         filled
         v-model="confirmPassword"
         label="Confirm New Password"

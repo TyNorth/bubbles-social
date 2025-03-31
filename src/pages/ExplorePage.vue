@@ -7,14 +7,16 @@
 
     <!-- Search -->
     <q-input
+      dark
       v-model="search"
       filled
       dense
       debounce="300"
-      placeholder="Search bubbles..."
-      class="q-mb-md text-white"
+      placeholder="🔍 Search bubbles..."
+      class="q-mb-md"
       :prefix="search ? '🔍' : ''"
       clearable
+      clear-icon="sym_o_clear"
     />
 
     <!-- Tag Filters -->
@@ -212,8 +214,4 @@ onMounted(async () => {
   await bubbleStore.fetchMyBubbles(auth.user.id)
 })
 </script>
-<style>
-input {
-  color: #fff !important;
-}
-</style>
+<style></style>

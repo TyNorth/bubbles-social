@@ -56,10 +56,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/stores/auth-store'
 
 const drawerOpen = ref(false)
 const router = useRouter()
-const isLoggedIn = ref(true)
+//const isLoggedIn = ref(true)
+const auth = useAuthStore()
 
 function toggleDrawer() {
   drawerOpen.value = !drawerOpen.value
@@ -73,15 +75,12 @@ function goToProfile() {
   router.push('/profile')
 }
 
-function handleAuthAction() {
-  if (isLoggedIn.value) {
-    // Perform logout
-    console.log('Logging out...')
-    isLoggedIn.value = false
+async function handleAuthAction() {
+  try {
+    await auth.logout()
     router.push('/login')
-  } else {
-    // Perform sign-in
-    router.push('/login')
+  } catch (err) {
+    console.log(`error: ${err}`)
   }
 }
 </script>

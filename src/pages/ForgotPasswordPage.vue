@@ -7,6 +7,7 @@
       </div>
 
       <q-input
+        dark
         filled
         v-model="email"
         label="Email"

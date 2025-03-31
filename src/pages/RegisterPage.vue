@@ -8,6 +8,7 @@
 
       <q-input
         filled
+        dark
         v-model="email"
         label="Email"
         type="email"
@@ -18,6 +19,7 @@
       />
 
       <q-input
+        dark
         filled
         v-model="password"
         label="Password"
@@ -29,6 +31,7 @@
 
       <q-input
         filled
+        dark
         v-model="confirmPassword"
         label="Confirm Password"
         type="password"

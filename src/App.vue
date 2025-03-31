@@ -5,4 +5,8 @@
 <script setup>
 //
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.q-input {
+  border-radius: 4px;
+}
+</style>
