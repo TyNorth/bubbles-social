@@ -5,13 +5,30 @@
       <q-toolbar>
         <!-- Hamburger -->
         <q-btn flat dense round icon="sym_o_menu" @click="toggleDrawer" />
+        <q-btn
+          flat
+          dense
+          :icon="
+            router.currentRoute.value.path == '/explore-field'
+              ? 'sym_o_cards'
+              : 'sym_o_bubble_chart'
+          "
+          :label="router.currentRoute.value.path == '/explore-field' ? 'Card View' : 'Bubble View'"
+          @click="
+            router.currentRoute.value.path == '/explore-field'
+              ? router.push('/explore')
+              : router.push('/explore-field')
+          "
+        />
 
         <q-toolbar-title>
           <span class="text-primary">BubbleNet</span>
         </q-toolbar-title>
 
         <!-- Top-right Actions -->
-        <q-btn flat dense round icon="sym_o_notifications" @click="goToNotifications" />
+        <q-btn flat dense round icon="sym_o_notifications" @click="goToNotifications">
+          <q-badge v-if="unreadCount > 0" color="red" floating>{{ unreadCount }}</q-badge>
+        </q-btn>
         <q-btn flat dense round icon="sym_o_account_circle" @click="goToProfile" />
         <q-btn flat dense round icon="sym_o_logout" @click="handleAuthAction" />
       </q-toolbar>
@@ -54,9 +71,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth-store'
+import { useNotificationStore } from 'stores/notification-store'
+
+const notifications = useNotificationStore()
+const unreadCount = computed(() => notifications.unread.length)
 
 const drawerOpen = ref(false)
 const router = useRouter()
@@ -83,6 +104,8 @@ async function handleAuthAction() {
     console.log(`error: ${err}`)
   }
 }
+
+console.log(router.currentRoute.value.path)
 </script>
 
 <style scoped>

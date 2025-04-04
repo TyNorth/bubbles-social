@@ -100,6 +100,8 @@ import CommentThread from 'components/CommentThread.vue'
 import { useAuthStore } from 'stores/auth-store'
 import { notifySuccess, notifyError } from 'src/utils/notify'
 import { getPostById } from 'src/db/posts'
+import { parseMentions } from 'src/utils/parseMentions'
+import { createNotification } from 'src/db/notifications'
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -143,11 +145,29 @@ async function submitComment() {
 
   if (error) {
     notifyError(error)
-  } else {
-    notifySuccess('Comment posted!')
-    newComment.value = ''
-    await fetchComments()
+    return
   }
+
+  // ✅ Only parse + notify if insert succeeded
+  const mentions = await parseMentions(newComment.value)
+
+  for (const mention of mentions) {
+    if (mention.user_id !== auth.user.id) {
+      await createNotification({
+        user_id: mention.user_id,
+        type: 'mention',
+        related_id: null,
+        metadata: {
+          postId: route.params.id,
+          preview: newComment.value.slice(0, 100),
+        },
+      })
+    }
+  }
+
+  notifySuccess('Comment posted!')
+  newComment.value = ''
+  await fetchComments()
 }
 
 async function submitReply(parentId) {
@@ -163,12 +183,48 @@ async function submitReply(parentId) {
 
   if (error) {
     notifyError(error)
-  } else {
-    notifySuccess('Reply posted!')
-    replyText.value = ''
-    replyingTo.value = null
-    await fetchComments()
+    return
   }
+
+  // Only run this if insert succeeded ✅
+  const mentions = await parseMentions(replyText.value)
+
+  for (const mention of mentions) {
+    if (mention.user_id !== auth.user.id) {
+      await createNotification({
+        user_id: mention.user_id,
+        type: 'mention',
+        related_id: parentId,
+        metadata: {
+          postId: route.params.id,
+          preview: replyText.value.slice(0, 100),
+        },
+      })
+    }
+  }
+
+  const { data: parent, error: parentError } = await supabase
+    .from('comments')
+    .select('user_id')
+    .eq('id', parentId)
+    .single()
+
+  if (!parentError && parent.user_id !== auth.user.id) {
+    await createNotification({
+      user_id: parent.user_id,
+      type: 'reply',
+      related_id: parentId,
+      metadata: {
+        postId: route.params.id,
+        preview: replyText.value.slice(0, 100),
+      },
+    })
+  }
+
+  notifySuccess('Reply posted!')
+  replyText.value = ''
+  replyingTo.value = null
+  await fetchComments()
 }
 
 watch(replyingTo, async (val) => {

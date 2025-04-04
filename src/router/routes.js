@@ -12,6 +12,13 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
+        path: 'explore-field',
+        name: 'explore-field',
+        component: () => import('pages/ExploreFieldPage.vue'),
+        meta: { requiresAuth: true },
+      },
+
+      {
         path: 'bubble/:id',
         name: 'bubble-view',
         component: () => import('pages/BubbleViewPage.vue'),

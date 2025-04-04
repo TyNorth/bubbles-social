@@ -1,5 +1,10 @@
 <template>
-  <q-card class="bubble-card" :flat="!elevated" :bordered="bordered" @click="handleClick">
+  <q-card
+    class="bubble-card floating-bubble"
+    :flat="!elevated"
+    :bordered="bordered"
+    @click="handleClick"
+  >
     <div class="bubble-cover" v-if="coverImage">
       <q-img :src="coverImage" :ratio="16 / 9" class="bubble-img" />
     </div>
