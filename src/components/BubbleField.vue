@@ -2,7 +2,7 @@
   <div class="bubble-field">
     <transition-group name="bubble-float" tag="div">
       <div
-        v-for="(bubble, index) in bubbles"
+        v-for="bubble in bubbles"
         :key="bubble.id"
         class="bubble-wrapper"
         :style="positions[bubble.id]"
@@ -29,24 +29,9 @@ const props = defineProps({
   filterTags: Array,
 })
 
-function bubbleStyle(index) {
-  const angle = index * 137.5 // golden angle
-  const radius = 120 + index * 20 // spacing out
-  const x = 50 + Math.cos(angle * (Math.PI / 180)) * radius
-  const y = 50 + Math.sin(angle * (Math.PI / 180)) * radius
-  const scale = 0.9 + Math.sin(index) * 0.1
-
-  return {
-    top: `${Math.min(Math.max(y, 5), 90)}%`,
-    left: `${Math.min(Math.max(x, 5), 90)}%`,
-    transform: `scale(${scale})`,
-  }
-}
-
 const positions = ref({})
 
 function runD3Simulation(bubbles) {
-  const radius = 90
   const width = window.innerWidth
   const height = window.innerHeight
 

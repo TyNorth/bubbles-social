@@ -78,11 +78,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/auth-store'
 import { notify, notifyError } from 'src/utils/notify'
 
-const $q = useQuasar()
 const router = useRouter()
 const auth = useAuthStore()
 

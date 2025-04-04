@@ -244,6 +244,7 @@ function highlightMentions(text) {
   return text.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color:#F35BC7">@$1</span>')
 }
 
+/*
 async function likePost(post) {
   // hook to interaction store or db
 }
@@ -255,7 +256,7 @@ async function dislikePost(post) {
 function editPost(post) {
   // hook to edit logic
 }
-
+*/
 onMounted(async () => {
   await fetchPost()
   await fetchComments()
