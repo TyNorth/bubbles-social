@@ -56,7 +56,7 @@
 
       <q-separator spaced />
 
-      <!-- Google OAuth Button -->
+      <!-- Google OAuth Button
       <q-btn
         outline
         color="white"
@@ -66,6 +66,7 @@
         @click="loginWithGoogle"
         :disable="loading"
       />
+       -->
 
       <div class="text-caption text-center text-grey q-mt-sm">
         Don't have an account?
@@ -79,7 +80,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'stores/auth-store'
-import { notify, notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/notify'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -123,10 +124,6 @@ function forgotPassword() {
 
 function goToSignup() {
   router.push('/register')
-}
-
-async function loginWithGoogle() {
-  notify({ message: 'Google login coming soon!', type: 'info' })
 }
 </script>
 

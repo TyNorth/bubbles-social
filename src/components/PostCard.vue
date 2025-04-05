@@ -84,13 +84,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { formatDistanceToNow } from 'date-fns'
 import { useInteractionStore } from 'src/stores/interaction-store'
-import { useAuthStore } from 'src/stores/auth-store'
 
 const interactionStore = useInteractionStore()
-const auth = useAuthStore()
 
 const props = defineProps({
   profile: Object,
