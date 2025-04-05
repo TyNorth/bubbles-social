@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getPublicBubbles, createBubble } from 'src/db/bubbles'
+import { getPublicBubbles } from 'src/db/bubbles'
 import { getUserMemberships, joinBubble } from 'src/db/memberships'
 
 /**

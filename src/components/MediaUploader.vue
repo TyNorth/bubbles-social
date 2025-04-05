@@ -36,7 +36,7 @@ async function uploadFactory(files) {
   return urls
 }
 
-function handleUpload({ files, xhr }) {
+function handleUpload({ files }) {
   files.forEach((f) => emit('media-uploaded', f.__uploaded))
   notifySuccess('Media uploaded')
 }

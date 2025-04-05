@@ -55,19 +55,19 @@
       <q-btn
         flat
         dense
-        :icon="isLiked ? 'sym_o_favorite' : 'sym_o_favorite'"
-        :color="isLiked ? 'red' : 'grey-5'"
-        :label="likeCount"
-        @click="toggleLike"
+        icon="sym_o_favorite"
+        :color="reaction === 'like' ? 'red' : 'grey-5'"
+        :label="reaction === 'like' ? likeCount : ''"
+        @click="() => setReaction('like')"
       />
 
       <q-btn
         flat
         dense
-        :icon="isDisliked ? 'sym_o_heart_broken' : 'sym_o_heart_broken'"
-        :color="isDisliked ? 'pink' : 'grey-5'"
-        :label="dislikeCount"
-        @click="toggleDislike"
+        icon="sym_o_heart_broken"
+        :color="reaction === 'dislike' ? 'pink' : 'grey-5'"
+        :label="reaction === 'dislike' ? dislikeCount : ''"
+        @click="() => setReaction('dislike')"
       />
 
       <q-btn
@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { formatDistanceToNow } from 'date-fns'
 import { useInteractionStore } from 'src/stores/interaction-store'
 import { useAuthStore } from 'src/stores/auth-store'
@@ -103,9 +103,11 @@ const props = defineProps({
   createdAt: String,
   commentCount: Number,
   editable: Boolean,
+  likeCount: Number,
+  dislikeCount: Number,
 })
 
-const emit = defineEmits(['like', 'dislike', 'comment', 'view', 'edit'])
+const emit = defineEmits(['comment', 'view', 'edit'])
 
 const formattedDate = computed(() =>
   formatDistanceToNow(new Date(props.createdAt), { addSuffix: true }),
@@ -113,39 +115,52 @@ const formattedDate = computed(() =>
 
 const profileInitial = computed(() => props.username?.charAt(0)?.toUpperCase() || 'U')
 
-const likeCount = computed(
-  () => interactionStore.getByPost(props.postId).filter((i) => i.type === 'like').length,
-)
+const likeCount = computed(() => {
+  return (
+    Object.entries(interactionStore.interactions).filter(
+      ([id, type]) => id === props.postId && type === 'like',
+    ).length ||
+    props.likeCount ||
+    0
+  )
+})
 
-const dislikeCount = computed(
-  () => interactionStore.getByPost(props.postId).filter((i) => i.type === 'dislike').length,
-)
+const dislikeCount = computed(() => {
+  return (
+    Object.entries(interactionStore.interactions).filter(
+      ([id, type]) => id === props.postId && type === 'dislike',
+    ).length ||
+    props.dislikeCount ||
+    0
+  )
+})
 
-const isLiked = computed(() => interactionStore.hasInteraction(props.postId, 'like', auth.user.id))
+const reaction = computed(() => interactionStore.getPostInteraction(props.postId))
 
-const isDisliked = computed(() =>
-  interactionStore.hasInteraction(props.postId, 'dislike', auth.user.id),
-)
-
-function toggleLike() {
-  emit('like')
-}
-
-function toggleDislike() {
-  emit('dislike')
+async function setReaction(type) {
+  if (reaction.value === type) {
+    // Toggle off → neutral
+    await interactionStore.setInteraction(props.postId, 'neutral')
+    await interactionStore.fetchInteraction(props.postId)
+  } else {
+    await interactionStore.setInteraction(props.postId, type)
+    await interactionStore.fetchInteraction(props.postId)
+  }
 }
 
 function comment() {
   emit('comment')
 }
-
 function view() {
   emit('view')
 }
-
 function edit() {
   emit('edit')
 }
+
+onMounted(async () => {
+  await interactionStore.fetchInteraction(props.postId)
+})
 </script>
 
 <style scoped>

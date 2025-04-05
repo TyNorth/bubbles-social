@@ -2,19 +2,21 @@
   <q-page class="q-pa-md">
     <PostCard
       v-if="post"
+      :key="post.id"
       :profile="post.profiles"
       :username="post.username"
+      :post-id="post.id"
       :content="post.content"
       :media-url="post.media_url"
       :tags="post.tags"
-      :level-tag="post.level_tag"
+      :level-tag="post?.level_tag"
       :created-at="post.created_at"
       :like-count="post.like_count"
       :dislike-count="post.dislike_count"
       :comment-count="post.comment_count"
       :editable="auth.user.id === post.user_id"
-      @like="() => likePost(post)"
-      @dislike="() => dislikePost(post)"
+      @comment="() => commentPost(post)"
+      @view="() => viewPost(post)"
       @edit="() => editPost(post)"
     />
 
@@ -88,6 +90,13 @@
         </q-card>
       </div>
     </div>
+
+    <EditPostDialog
+      v-model="showEditDialog"
+      :content="editingPost?.content"
+      :post-id="editingPost?.id"
+      @updated="handlePostUpdate"
+    />
   </q-page>
 </template>
 
@@ -102,7 +111,8 @@ import { notifySuccess, notifyError } from 'src/utils/notify'
 import { getPostById } from 'src/db/posts'
 import { parseMentions } from 'src/utils/parseMentions'
 import { createNotification } from 'src/db/notifications'
-
+import EditPostDialog from 'components/EditPostDialog.vue'
+import { updatePost } from 'src/db/posts'
 const auth = useAuthStore()
 const route = useRoute()
 
@@ -119,6 +129,20 @@ async function fetchPost() {
   } catch (err) {
     notifyError(err)
   }
+}
+
+const editingPost = ref(null)
+const showEditDialog = ref(false)
+
+function editPost(post) {
+  editingPost.value = post
+  showEditDialog.value = true
+}
+
+async function handlePostUpdate({ postId, content }) {
+  await updatePost(postId, { content })
+  notifySuccess('Post updated!')
+  await fetchPost()
 }
 
 async function fetchComments() {

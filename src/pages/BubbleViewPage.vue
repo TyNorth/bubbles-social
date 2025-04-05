@@ -23,6 +23,9 @@
           :tags="post.tags"
           :level-tag="post?.level_tag"
           :created-at="post.created_at"
+          :like-count="post.like_count"
+          :curretnReaction="post.currentReaction"
+          :dislike-count="post.dislike_count"
           :comment-count="post.comment_count"
           :editable="auth.user.id === post.user_id"
           @like="() => toggleInteraction(post, 'like')"
@@ -56,7 +59,9 @@
 
         <q-card-section>
           <q-editor
-            dark
+            :dark="true"
+            toolbar-text-color="white"
+            content-class="text-white"
             v-model="newPostContent"
             min-height="200px"
             height="auto"
@@ -100,6 +105,13 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <EditPostDialog
+      v-model="showEditDialog"
+      :content="editingPost?.content"
+      :post-id="editingPost?.id"
+      @updated="handlePostUpdate"
+    />
   </q-page>
 </template>
 
@@ -112,11 +124,14 @@ import PostCard from 'components/PostCard.vue'
 import { notifyError, notifySuccess } from 'src/utils/notify'
 import { useAuthStore } from 'stores/auth-store'
 import { useInteractionStore } from 'stores/interaction-store'
-import { Dialog } from 'quasar'
+
 import { updatePost, getPostsByBubble, createPost } from 'src/db/posts'
 import { uploadPostMedia } from 'src/db/storage'
+import EditPostDialog from 'components/EditPostDialog.vue'
+const editingPost = ref(null)
 
 const showCreateDialog = ref(false)
+const showEditDialog = ref(false)
 const newPostContent = ref('')
 const auth = useAuthStore()
 const interactionStore = useInteractionStore()
@@ -132,6 +147,17 @@ const fileInputRef = ref(null)
 
 function openFilePicker() {
   fileInputRef.value?.click()
+}
+
+function editPost(post) {
+  editingPost.value = post
+  showEditDialog.value = true
+}
+
+async function handlePostUpdate({ postId, content }) {
+  await updatePost(postId, { content })
+  notifySuccess('Post updated!')
+  await fetchPosts()
 }
 
 async function handleFileChange(event) {
@@ -229,56 +255,12 @@ function loadMore(done) {
   setTimeout(done, 300)
 }
 
-async function toggleInteraction(post, type) {
-  try {
-    const result = await interactionStore.toggle({
-      userId: auth.user.id,
-      postId: post.id,
-      type,
-    })
-
-    const actionText =
-      type === 'like'
-        ? result.result === 'added'
-          ? 'Liked!'
-          : 'Like removed.'
-        : result.result === 'added'
-          ? 'Disliked.'
-          : 'Dislike removed.'
-
-    notifySuccess(actionText)
-  } catch (err) {
-    notifyError(err)
-  }
-}
-
 function commentPost(post) {
   router.push({ path: `/post/${post.id}`, query: { focus: 'comments' } })
 }
 
 function viewPost(post) {
   router.push(`/post/${post.id}`)
-}
-
-function editPost(post) {
-  Dialog.create({
-    title: 'Edit Post',
-    message: 'Update your post content below:',
-    prompt: {
-      model: post.content,
-      type: 'textarea',
-    },
-    cancel: true,
-    persistent: true,
-  }).onOk(async (newContent) => {
-    try {
-      await updatePost(post.id, { content: newContent })
-      notifySuccess('Post updated!')
-      await fetchPosts()
-    } catch (err) {
-      notifyError(err)
-    }
-  })
 }
 
 onMounted(async () => {

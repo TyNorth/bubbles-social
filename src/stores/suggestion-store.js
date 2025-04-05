@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getBubbleRelations, getRelationsByType } from 'src/db/relations'
+import { getBubbleRelations } from 'src/db/relations'
 import { logCuriosityPath } from 'src/db/curiosity'
 
 /**

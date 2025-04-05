@@ -10,53 +10,72 @@ import { supabase } from 'boot/supabase'
  * @property {string} created_at
  */
 
-/**
- * Toggle a like or dislike for a given user & post
- * Ensures the user can only have one 'like' or 'dislike' at a time per post.
- * @param {string} userId
- * @param {string} postId
- * @param {'like' | 'dislike'} type
- * @returns {Promise<'added' | 'removed'>}
- */
-export async function toggleInteraction(userId, postId, type) {
-  const oppositeType = type === 'like' ? 'dislike' : 'like'
+export async function getInteraction(userId, postId) {
+  try {
+    const { data, error } = await supabase
+      .from('interactions')
+      .select('type')
+      .eq('user_id', userId)
+      .eq('post_id', postId)
+      .maybeSingle() // Expecting at most one interaction per user/post
 
-  // Remove any opposite interaction first
-  const { data: existingOpposite } = await supabase
-    .from('interactions')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('post_id', postId)
-    .eq('type', oppositeType)
-
-  if (existingOpposite?.length) {
-    await supabase.from('interactions').delete().eq('id', existingOpposite[0].id)
+    if (error) {
+      console.error('Error fetching interaction:', error)
+      return null
+    }
+    return data ? data.type : 'neutral' // Default to 'neutral' if no interaction exists
+  } catch (error) {
+    console.error('Error fetching interaction:', error)
+    return null
   }
+}
 
-  // Then toggle current type
-  const { data: existing, error: fetchError } = await supabase
-    .from('interactions')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('post_id', postId)
-    .eq('type', type)
-    .maybeSingle()
+export async function updateInteraction(userId, postId, type) {
+  try {
+    // Check if an interaction already exists
+    const existingInteraction = await getInteraction(userId, postId)
 
-  if (fetchError && fetchError.code !== 'PGRST116') throw fetchError
+    if (existingInteraction && existingInteraction !== 'neutral' && type === 'neutral') {
+      // Delete the interaction if toggling from like/dislike to neutral
+      const { error: deleteError } = await supabase
+        .from('interactions')
+        .delete()
+        .eq('user_id', userId)
+        .eq('post_id', postId)
 
-  if (existing) {
-    const { error: deleteError } = await supabase
-      .from('interactions')
-      .delete()
-      .eq('id', existing.id)
-    if (deleteError) throw deleteError
-    return 'removed'
-  } else {
-    const { error: insertError } = await supabase
-      .from('interactions')
-      .insert([{ user_id: userId, post_id: postId, type }])
-    if (insertError) throw insertError
-    return 'added'
+      if (deleteError) {
+        console.error('Error deleting interaction:', deleteError)
+        return false
+      }
+      return true
+    } else if (existingInteraction && existingInteraction !== 'neutral') {
+      // Update the existing interaction
+      const { error: updateError } = await supabase
+        .from('interactions')
+        .update({ type })
+        .eq('user_id', userId)
+        .eq('post_id', postId)
+
+      if (updateError) {
+        console.error('Error updating interaction:', updateError)
+        return false
+      }
+      return true
+    } else {
+      // Insert a new interaction
+      const { error: insertError } = await supabase
+        .from('interactions')
+        .insert([{ user_id: userId, post_id: postId, type }])
+
+      if (insertError) {
+        console.error('Error inserting interaction:', insertError)
+        return false
+      }
+      return true
+    }
+  } catch (error) {
+    console.error('Error updating/inserting interaction:', error)
+    return false
   }
 }
 

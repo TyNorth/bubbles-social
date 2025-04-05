@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getSession, getUser, signIn, signUp, signOut } from 'src/db/auth'
+import { getSession, signIn, signUp, signOut } from 'src/db/auth'
 
 /**
  * @typedef {Object} AuthState

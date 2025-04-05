@@ -6,6 +6,10 @@
         <!-- Hamburger -->
         <q-btn flat dense round icon="sym_o_menu" @click="toggleDrawer" />
         <q-btn
+          v-show="
+            router.currentRoute.value.path == '/explore' ||
+            router.currentRoute.value.path == '/explore-field'
+          "
           flat
           dense
           :icon="
@@ -50,6 +54,11 @@
         <q-item clickable v-ripple to="/profile" exact>
           <q-item-section avatar><q-icon name="sym_o_person" /></q-item-section>
           <q-item-section>My Profile</q-item-section>
+        </q-item>
+
+        <q-item clickable v-ripple to="/feed" exact>
+          <q-item-section avatar><q-icon name="sym_o_dynamic_feed" /></q-item-section>
+          <q-item-section>My Feed</q-item-section>
         </q-item>
       </q-list>
 

@@ -17,6 +17,12 @@ const routes = [
         component: () => import('pages/ExploreFieldPage.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'feed',
+        name: 'feed',
+        component: () => import('pages/FeedPage.vue'),
+        meta: { requiresAuth: true },
+      },
 
       {
         path: 'bubble/:id',
