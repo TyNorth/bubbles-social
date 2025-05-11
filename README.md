@@ -149,14 +149,9 @@ Bubbles rise, drift, and pop based on engagement, vibe, and intentional explorat
 
 ## 📄 License
 
-MIT © \[Your Name]
+MIT © \Ty North
 
-```
 
----
-
-Would you like a shortened version for the Quasar docs `description` tag or a splash page modal intro?
-```
 
 
 ### Build the app for production
