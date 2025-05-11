@@ -29,7 +29,6 @@ yarn format
 # or
 npm run format
 ```
-Absolutely — here’s a polished `README.md` for your **Bubbles** app that captures its purpose, architecture, and developer setup.
 
 ---
 
