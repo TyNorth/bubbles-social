@@ -1,38 +1,8 @@
-# Bubbles (bubbles)
-
-Next-Gen Social Media App
-
-## Install the dependencies
-```bash
-yarn
-# or
-npm install
-```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
 
 ---
 
 # 🫧 Bubbles – Curiosity Has a Place
+Next-Gen Social Media App
 
 **Bubbles** is a social discovery platform designed to gently pull people out of their echo chambers and into idea spaces — called *bubbles* — where curiosity, creativity, and thoughtful conversation thrive.
 
