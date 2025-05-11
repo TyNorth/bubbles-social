@@ -32,7 +32,6 @@ npm run format
 
 ---
 
-````markdown
 # 🫧 Bubbles – Curiosity Has a Place
 
 **Bubbles** is a social discovery platform designed to gently pull people out of their echo chambers and into idea spaces — called *bubbles* — where curiosity, creativity, and thoughtful conversation thrive.
@@ -86,6 +85,7 @@ It's not just a feed — it's a **living field of thought**.
 ```bash
 git clone https://github.com/your-username/bubbles.git
 cd bubbles
+
 ````
 
 ### 2. Install Dependencies
