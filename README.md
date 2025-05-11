@@ -119,7 +119,7 @@ Bubbles rise, drift, and pop based on engagement, vibe, and intentional explorat
 
 ## 📄 License
 
-MIT © \Ty North
+MIT © Ty North
 
 
 
